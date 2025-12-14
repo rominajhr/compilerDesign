@@ -40,15 +40,15 @@ string preprocessor :: proces(){
             }
 
             libname += ".txt";
-            cout<<findLibrary(libname)<<endl;
-            result += '\n';
+            result += findLibrary(libname);
             
         }
         else{
             result += line + '\n';
-            cout<<line<<endl;
         }
     }
+
+    cout<<result<<endl;
 
     return result;
 }
