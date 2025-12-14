@@ -48,7 +48,7 @@ lexer :: lexer(const string & code) : src(code) , i(0) , line(1) {
                 }
             }
             else{  // operator
-                printToken(T_OPERATOR , string(1 , src[i]));
+                printToken(T_DIV , string(1 , src[i]));
                 i++;
             }
 
@@ -79,36 +79,32 @@ lexer :: lexer(const string & code) : src(code) , i(0) , line(1) {
                 i++;
             }
 
-            if(word == "int" || word == "return")
-                printToken(T_KEYWORD , word);
+            auto it = keywordTable.find(word);
+            if (it != keywordTable.end())
+                printToken(it->second, word);
             else
-                printToken(T_IDENTIFIER , word);
+                printToken(T_IDENTIFIER, word);
 
             continue;
         }
 
-        // ---------------- OPERATORS ----------------
-        if(src[i] == '<' && src[i + 1] == '<'){
-            printToken(T_OPERATOR , "<<");
+        // ---------------- TWO CHARACTER OPERATORS ----------------
+        string two;
+        two += src[i];
+        two += src[i + 1];
+        auto it2 = twoCharOps.find(two);
+        if (it2 != twoCharOps.end()) {
+            printToken(it2->second, two);
             i += 2;
             continue;
         }
-        if(src[i] == '>' && src[i + 1] == '>'){
-            printToken(T_OPERATOR , ">>");
-            i += 2;
-            continue;
-        }
-        if(src[i] == '-' || src[i] == '+' || src[i] == '*' || src[i] == '%' || src[i] == '='){
-            printToken(T_OPERATOR , string(1 , src[i]));
+        
+        // ---------------- SYMBOLS OR ONE CHARACTER OPERATORS ----------------
+        auto it1 = symbolORoneCarOpsTable.find(src[i]);
+        if (it1 != symbolORoneCarOpsTable.end()) {
+            printToken(it1->second, string(1, src[i]));
             i++;
             continue;
-        }
-
-        // ---------------- SYMBOLS ----------------
-        if (src[i] == ';' || src[i] == '{' || src[i] == '}' || src[i] == '(' || src[i] == ')') {
-                printToken(T_SYMBOL, std::string(1, src[i]));
-                i++;
-                continue;
         }
 
         // ---------------- STRING ----------------
